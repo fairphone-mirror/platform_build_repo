@@ -3588,6 +3588,16 @@ INTERNAL_USERDATAIMAGE_FILES := \
     $(filter $(TARGET_OUT_DATA)/%,$(ALL_DEFAULT_INSTALLED_MODULES))
 
 ifdef BUILDING_USERDATA_IMAGE
+
+ifdef BOARD_PREBUILT_USERDATAIMAGE
+# By flashing an empty userdata image, device would format data partition
+# automatically if 'formattable' flag is set in fstab.
+# See function 'fs_mgr_mount_all' in fs_mgr.cpp for more details.
+INSTALLED_USERDATAIMAGE_TARGET := $(PRODUCT_OUT)/userdata.img
+$(eval $(call copy-one-file,$(BOARD_PREBUILT_USERDATAIMAGE),$(INSTALLED_USERDATAIMAGE_TARGET)))
+
+else
+
 userdataimage_intermediates := \
     $(call intermediates-dir-for,PACKAGING,userdata)
 BUILT_USERDATAIMAGE_TARGET := $(PRODUCT_OUT)/userdata.img
@@ -3627,6 +3637,7 @@ UNMOUNTED_NOTICE_VENDOR_DEPS+= $(INSTALLED_USERDATAIMAGE_TARGET)
 userdataimage-nodeps: | $(INTERNAL_USERIMAGES_DEPS)
 	$(build-userdataimage-target)
 
+endif # else BOARD_PREBUILT_USERDATAIMAGE
 endif # BUILDING_USERDATA_IMAGE
 
 # ASAN libraries in the system image - build rule.
