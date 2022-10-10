@@ -171,6 +171,22 @@ function check_variant()
     return 1
 }
 
+MMITEST_CHOICES=(true false)
+
+# check to see if the mmi test option is valid
+function check_mmitest()
+{
+    local v
+    for v in ${MMITEST_CHOICES[@]}
+    do
+        if [ "$v" = "$1" ]
+        then
+            return 0
+        fi
+    done
+    return 1
+}
+
 function setpaths()
 {
     local T=$(gettop)
@@ -447,6 +463,15 @@ function multitree_lunch_help()
     echo "    Prints this message." 1>&2
 }
 
+function get_build_product()
+{
+    local -a prodlist
+    prodlist=(`/usr/bin/find $@ -name AndroidProducts.mk 2>/dev/null | \
+                        xargs grep -h -E -o "[^\/]*.mk" | \
+                        awk '{sub (".mk","",$NF); print $NF}' | sort | uniq`)
+    echo ${prodlist[*]}
+}
+
 function multitree_lunch()
 {
     local code
@@ -543,11 +568,26 @@ function choosetype()
 function chooseproduct()
 {
     local default_value
+    local -a prodlist
+    local index=1
+    local p
+    local poo
+
+
     if [ "x$TARGET_PRODUCT" != x ] ; then
         default_value=$TARGET_PRODUCT
     else
         default_value=aosp_arm
     fi
+
+    prodlist=(`get_build_product device/tct device/qcom`)
+
+    echo "Product choices are:"
+    for p in ${prodlist[@]}
+    do
+        echo "     $index. $p"
+        let "index = $index + 1"
+    done
 
     export TARGET_BUILD_APPS=
     export TARGET_PRODUCT=
@@ -564,6 +604,13 @@ function chooseproduct()
 
         if [ -z "$ANSWER" ] ; then
             export TARGET_PRODUCT=$default_value
+        elif (echo -n $ANSWER | grep -q -e "^[0-9][0-9]*$") ; then
+            poo=`echo -n $ANSWER`
+            if [ $poo -le ${#prodlist[@]} ] ; then
+                export TARGET_PRODUCT=${prodlist[$(($ANSWER-1))]}
+            else
+                echo "** Bad product selection: $ANSWER"
+            fi
         else
             if check_product $ANSWER
             then
@@ -629,6 +676,51 @@ function choosevariant()
     done
 }
 
+function choosemini()
+{
+    echo "Is it a mmitest build? "
+    local index=1
+    local v
+    for v in ${MMITEST_CHOICES[@]}
+    do
+        echo "     $index. $v"
+        index=$(($index+1))
+    done
+
+    local default_value=false
+    local ANSWER
+
+    export TARGET_BUILD_MMITEST=
+    while [ -z "$TARGET_BUILD_MMITEST" ]
+    do
+        echo -n "Which would you like? [$default_value] "
+        if [ -z "$1" ] ; then
+            read ANSWER
+        else
+            echo $1
+            ANSWER=$1
+        fi
+
+        if [ -z "$ANSWER" ] ; then
+            export TARGET_BUILD_MMITEST=$default_value
+        elif (echo -n $ANSWER | grep -q -e "^[0-9][0-9]*$") ; then
+            if [ "$ANSWER" -le "${#MMITEST_CHOICES[@]}" ] ; then
+                export TARGET_BUILD_MMITEST=${MMITEST_CHOICES[$(($ANSWER-1))]}
+            fi
+        else
+            if check_mmitest $ANSWER
+            then
+                export TARGET_BUILD_MMITEST=$ANSWER
+            else
+                echo "** Not a valid mmitest option : $ANSWER"
+           fi
+        fi
+        if [ -n "$1" ] ; then
+            break
+        fi
+    done
+}
+
 function choosecombo()
 {
     choosetype $1
@@ -640,6 +732,10 @@ function choosecombo()
     echo
     echo
     choosevariant $3
+
+    echo
+    echo
+    choosemini $4
 
     echo
     build_build_var_cache
@@ -777,6 +873,10 @@ function lunch()
       unset TARGET_PLATFORM_VERSION
     fi
     export TARGET_BUILD_TYPE=release
+
+    if [ -z "$TARGET_BUILD_MMITEST" ]; then
+        export TARGET_BUILD_MMITEST=false
+    fi
 
     if [ $used_lunch_menu -eq 1 ]; then
       echo
