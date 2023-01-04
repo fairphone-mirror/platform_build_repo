@@ -34,6 +34,7 @@ _vendor_owner_allowed_list := \
         mtk \
         nvidia \
         nxp \
+        st \
         nxpsw \
         qcom \
         qti \
