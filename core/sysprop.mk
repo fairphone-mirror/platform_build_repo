@@ -278,6 +278,7 @@ $(gen_from_buildinfo_sh): $(INTERNAL_BUILD_ID_MAKEFILE) $(API_FINGERPRINT) | $(B
 	        TARGET_CPU_ABI="$(TARGET_CPU_ABI)" \
 	        TARGET_CPU_ABI2="$(TARGET_CPU_ABI2)" \
 	        ZYGOTE_FORCE_64_BIT="$(ZYGOTE_FORCE_64_BIT)" \
+	        BUILD_DISPLAY_ID="$(BUILD_DISPLAY_ID)" \
 	        bash $(BUILDINFO_SH) > $@
 
 ifdef TARGET_SYSTEM_PROP
