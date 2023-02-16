@@ -52,4 +52,9 @@ if [ -n "$BUILD_THUMBPRINT" ] ; then
   echo "ro.build.thumbprint=$BUILD_THUMBPRINT"
 fi
 
+if [ -n "$OVERRIDE_TARGET_PRODUCT" ] ; then
+  echo "ro.build.product=$OVERRIDE_TARGET_PRODUCT"
+  echo "ro.build.device=$OVERRIDE_TARGET_DEVICE"
+fi
+
 echo "# end build properties"
