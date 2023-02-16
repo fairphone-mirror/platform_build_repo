@@ -22,9 +22,15 @@ echo "ro.${partition}.build.version.release_or_codename=$PLATFORM_VERSION"
 echo "ro.${partition}.build.version.sdk=$PLATFORM_SDK_VERSION"
 
 echo "ro.product.${partition}.brand=$PRODUCT_BRAND"
-echo "ro.product.${partition}.device=$PRODUCT_DEVICE"
 echo "ro.product.${partition}.manufacturer=$PRODUCT_MANUFACTURER"
 echo "ro.product.${partition}.model=$PRODUCT_MODEL"
-echo "ro.product.${partition}.name=$PRODUCT_NAME"
+
+if [ -n "$OVERRIDE_TARGET_PRODUCT" ] ; then
+     echo "ro.product.${partition}.name=$OVERRIDE_TARGET_PRODUCT"
+     echo "ro.product.${partition}.device=$OVERRIDE_TARGET_DEVICE"
+else
+     echo "ro.product.${partition}.name=$PRODUCT_NAME"
+     echo "ro.product.${partition}.device=$PRODUCT_DEVICE"
+fi
 
 echo "# end common build properties"
