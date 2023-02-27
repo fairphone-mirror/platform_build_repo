@@ -105,6 +105,15 @@ PLATFORM_VERSION_KNOWN_CODENAMES := \
   $(call normalize-comma-list,$(PLATFORM_VERSION_KNOWN_CODENAMES))
 .KATI_READONLY := PLATFORM_VERSION_KNOWN_CODENAMES
 
+ifndef VERSIONDEF
+VERSIONDEF := $(TOPDIR)version/version.inc
+MODEM_VER := $(shell awk '/MODEM_VER/ {print substr($$3, 2,12)}' $(VERSIONDEF))
+RECOVERY_VER := $(shell awk '/RECOVERY_VER/ {print substr($$3, 2,12)}' $(VERSIONDEF))
+ANDROID_BOOT_VER := $(shell awk '/ANDROID_BOOT_VER/ {print substr($$3, 2,12)}' $(VERSIONDEF))
+ANDROID_SYS_VER := $(shell awk '/ANDROID_SYS_VER/ {print substr($$3, 2,12)}' $(VERSIONDEF))
+STUDY_PARA_VER := $(shell awk '/STUDY_PARA_VER/ {print substr($$3, 2,12)}' $(VERSIONDEF))
+endif
+
 ifndef PLATFORM_SECURITY_PATCH
     #  Used to indicate the security patch that has been applied to the device.
     #  It must signify that the build includes all security patches issued up through the designated Android Public Security Bulletin.

@@ -185,6 +185,11 @@ TARGET_BUILD_JAVA_SUPPORT_LEVEL :=$= platform
 # -----------------------------------------------------------------
 
 ADDITIONAL_SYSTEM_PROPERTIES += ro.treble.enabled=${PRODUCT_FULL_TREBLE}
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.sys.ver=$(ANDROID_SYS_VER)
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.boot.ver=$(ANDROID_BOOT_VER)
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.rec.ver=$(RECOVERY_VER)
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.modem.ver=$(MODEM_VER)
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.study.ver=$(STUDY_PARA_VER)
 
 $(KATI_obsolete_var PRODUCT_FULL_TREBLE,\
 	Code should be written to work regardless of a device being Treble or \
