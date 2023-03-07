@@ -4278,6 +4278,7 @@ endif
 ifneq (,$(wildcard external/avb))
 INTERNAL_OTATOOLS_PACKAGE_FILES += \
   $(sort $(shell find external/avb/test/data -type f -name "testkey_*.pem" -o \
+      -name "releasekey_rsa4096.pem" -o \
       -name "atx_metadata.bin"))
 endif
 ifeq (true,$(PRODUCT_SUPPORTS_VBOOT))
