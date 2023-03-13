@@ -14,6 +14,8 @@ else
 fi
 
 echo "ro.build.display.id=$BUILD_DISPLAY_ID"
+#Add by shaopan.tang 2023-03-13 [FP5-428]IMS user agent
+echo "ro.vendor.build.software.version=$BUILD_DISPLAY_ID"
 #Add End by shaopan.tang
 
 # The ro.build.id will be set dynamically by init, by appending the unique vbmeta digest.
