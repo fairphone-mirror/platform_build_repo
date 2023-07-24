@@ -2300,6 +2300,7 @@ endef
 define sign-package-arg
 $(hide) mv $(1) $(1).unsigned
 $(hide) $(JAVA) -Djava.library.path=$$(dirname $(SIGNAPK_JNI_LIBRARY_PATH)) -jar $(SIGNAPK_JAR) \
+    $(if $(filter true,$(BUILD_WITH_RELEASEKEY)), -p $(ANDROID_PW_FILE)) \
     $(if $(strip $(PRIVATE_CERTIFICATE_LINEAGE)), --lineage $(PRIVATE_CERTIFICATE_LINEAGE)) \
     $(PRIVATE_CERTIFICATE) $(PRIVATE_PRIVATE_KEY) \
     $(PRIVATE_ADDITIONAL_CERTIFICATES) $(1).unsigned $(1).signed

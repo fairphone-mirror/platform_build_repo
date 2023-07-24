@@ -331,6 +331,12 @@ function setpaths()
     unset ANDROID_TARGET_OUT_TESTCASES
     export ANDROID_TARGET_OUT_TESTCASES=$(get_abs_build_var TARGET_OUT_TESTCASES)
 
+    #added by wushaohua, using release key for user
+    unset ANDROID_PW_FILE
+    if [ "$BUILD_WITH_RELEASEKEY" == "true" ]; then
+        export ANDROID_PW_FILE="vendor/tct/release-keys/certificate/sign_passwd"
+    fi
+
     # needed for building linux on MacOS
     # TODO: fix the path
     #export HOST_EXTRACFLAGS="-I "$T/system/kernel_headers/host_include
