@@ -27,6 +27,11 @@ else
 endif
 
 ADDITIONAL_SYSTEM_PROPERTIES += ro.treble.enabled=${PRODUCT_FULL_TREBLE}
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.sys.ver=$(ANDROID_SYS_VER)
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.boot.ver=$(ANDROID_BOOT_VER)
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.rec.ver=$(RECOVERY_VER)
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.modem.ver=$(MODEM_VER)
+ADDITIONAL_SYSTEM_PROPERTIES += ro.tct.study.ver=$(STUDY_PARA_VER)
 
 # Set ro.llndk.api_level to show the maximum vendor API level that the LLNDK in
 # the system partition supports.
