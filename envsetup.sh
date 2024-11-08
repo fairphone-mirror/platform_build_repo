@@ -248,6 +248,11 @@ function set_lunch_paths()
 
     # Finally, set PATH
     export PATH=$ANDROID_LUNCH_BUILD_PATHS:$PATH
+
+    unset ANDROID_PW_FILE
+    if [ "$BUILD_WITH_RELEASEKEY" == "true" ]; then
+        export ANDROID_PW_FILE="vendor/tct/release-keys/certificate/sign_passwd"
+    fi
 }
 
 # Add directories to PATH that are NOT dependent on the lunch target.

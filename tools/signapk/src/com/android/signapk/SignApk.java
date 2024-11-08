@@ -224,6 +224,52 @@ class SignApk {
         }
     }
 
+//added by wushaohua for release key
+    private static String parsePassword(File keyFile, File passwordFile) {
+        String keyName = keyFile.getPath().replace(".pk8", "");
+
+        try {
+            FileInputStream fStream = new FileInputStream(passwordFile);
+            DataInputStream dStream = new DataInputStream(fStream);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(dStream));
+            String strLine;
+
+            while ((strLine = bufferedReader.readLine()) != null)   {
+                boolean isCommnet = true;
+                for (int i=0;i<strLine.length();i++) {
+                    if (strLine.charAt(i) == ' ') {
+                        isCommnet = true;
+                        continue;
+                    } else if (strLine.charAt(i) == '#') {
+                        isCommnet = true;
+                        break;
+                    } else {
+                        isCommnet = false;
+                        break;
+                    }
+                }
+                if (isCommnet)
+                    continue;
+
+                String[] content = strLine.split("]]]");
+                String signKey = content[1].replace(" ", "");;
+
+                if (keyName.equals(signKey)) {
+                    String passWord = content[0].replace("[", "");
+                    passWord = passWord.replace(" ", "");
+                    return passWord;
+                }
+            }
+
+            dStream.close();
+        } catch (Exception e) {
+            return null;
+        }
+
+        return null;
+    }
+//added end by wushaohua
+
     /**
      * Decrypt an encrypted PKCS#8 format private key.
      *
@@ -233,7 +279,7 @@ class SignApk {
      * @param encryptedPrivateKey The raw data of the private key
      * @param keyFile The file containing the private key
      */
-    private static PKCS8EncodedKeySpec decryptPrivateKey(byte[] encryptedPrivateKey, File keyFile)
+    private static PKCS8EncodedKeySpec decryptPrivateKey(byte[] encryptedPrivateKey, File keyFile, File passwordFile)// wushaohua add parameter "passwordFile"
         throws GeneralSecurityException {
         EncryptedPrivateKeyInfo epkInfo;
         try {
@@ -243,8 +289,17 @@ class SignApk {
             return null;
         }
 
+
+//added by wushaohua for release key
+     char[] password = null;
+     if(passwordFile != null)
+        password = parsePassword(keyFile, passwordFile).toCharArray();
+     else
+        password = readPassword(keyFile.getPath());
+//added end by wushaohua
+
         SecretKeyFactory skFactory = SecretKeyFactory.getInstance(epkInfo.getAlgName());
-        Key key = skFactory.generateSecret(new PBEKeySpec(readPassword(keyFile.getPath())));
+        Key key = skFactory.generateSecret(new PBEKeySpec(password));
         Cipher cipher = Cipher.getInstance(epkInfo.getAlgName());
         cipher.init(Cipher.DECRYPT_MODE, key, epkInfo.getAlgParameters());
 
@@ -257,7 +312,7 @@ class SignApk {
     }
 
     /** Read a PKCS#8 format private key. */
-    private static PrivateKey readPrivateKey(File file)
+    private static PrivateKey readPrivateKey(File file, File passwordFile)// wushaohua add parameter "passwordFile"
         throws IOException, GeneralSecurityException {
         DataInputStream input = new DataInputStream(new FileInputStream(file));
         try {
@@ -265,7 +320,7 @@ class SignApk {
             input.read(bytes);
 
             /* Check to see if this is in an EncryptedPrivateKeyInfo structure. */
-            PKCS8EncodedKeySpec spec = decryptPrivateKey(bytes, file);
+            PKCS8EncodedKeySpec spec = decryptPrivateKey(bytes, file, passwordFile);// wushaohua add parameter "passwordFile"
             if (spec == null) {
                 spec = new PKCS8EncodedKeySpec(bytes);
             }
@@ -1057,6 +1112,7 @@ class SignApk {
 
     private static void usage() {
         System.err.println("Usage: signapk [-w] " +
+                           "[-p password_file]" +
                            "[-a <alignment>] " +
                            "[--align-file-size] " +
                            "[-providerClass <className>] " +
@@ -1096,6 +1152,10 @@ class SignApk {
         SigningCertificateLineage certLineage = null;
         Integer rotationMinSdkVersion = null;
 
+        //added by wushaohua for cts release key
+        File passwordFile = null;
+        //added end by wushaohua
+
         int argstart = 0;
         while (argstart < args.length && args[argstart].startsWith("-")) {
             if ("-w".equals(args[argstart])) {
@@ -1131,6 +1191,21 @@ class SignApk {
             } else if ("--align-file-size".equals(args[argstart])) {
                 alignFileSize = true;
                 ++argstart;
+            //added begin by wushaohua for cts release key
+            } else if ("-p".equals(args[argstart])) {
+                ++argstart;
+
+                passwordFile = new File(args[argstart]);
+                if (passwordFile.exists()) {
+                    ++argstart;
+                } else {
+                    System.err.println("Usage: signapk [-w] " +
+                            "[-p password_file]" +
+                            "publickey.x509[.pem] privatekey.pk8 " +
+                            "input.jar output.jar");
+                    System.exit(2);
+                }
+            //added end by wushaohua
             } else if ("--min-sdk-version".equals(args[argstart])) {
                 String minSdkVersionString = args[++argstart];
                 try {
@@ -1222,7 +1297,7 @@ class SignApk {
             for (int i = 0; i < numKeys; ++i) {
                 int argNum = argstart + i*2 + 1;
                 if (keyStore == null) {
-                    privateKey[i] = readPrivateKey(new File(args[argNum]));
+                    privateKey[i] = readPrivateKey(new File(args[argNum]), passwordFile); // wushaohua add parameter "passwordFile"
                 } else {
                     final String keyAlias = args[argNum];
                     privateKey[i] = loadPrivateKeyFromKeyStore(keyStore, keyAlias);

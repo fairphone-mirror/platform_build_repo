@@ -5663,9 +5663,15 @@ INTERNAL_OTATOOLS_MODULES_WITH_DEPS := \
 INTERNAL_OTATOOLS_PACKAGE_FILES := \
   $(filter $(HOST_OUT)/%,$(call module-installed-files,$(INTERNAL_OTATOOLS_MODULES_WITH_DEPS)))
 
+ifneq (true,$(BUILD_WITH_RELEASEKEY))
 INTERNAL_OTATOOLS_PACKAGE_FILES += \
   $(sort $(shell find build/make/target/product/security -type f -name "*.x509.pem" -o \
       -name "*.pk8"))
+else
+INTERNAL_OTATOOLS_PACKAGE_FILES += \
+  $(sort $(shell find vendor/tct/release-keys/certificate -type f -name "*.x509.pem" -o \
+      -name "*.pk8"))
+endif
 
 ifneq (,$(wildcard packages/modules))
 INTERNAL_OTATOOLS_PACKAGE_FILES += \
