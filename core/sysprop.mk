@@ -34,10 +34,18 @@ define generate-common-build-props
     echo "# These properties identify this partition image." >> $(2);\
     echo "####################################" >> $(2);\
     echo "ro.product.$(1).brand=$(PRODUCT_BRAND)" >> $(2);\
-    echo "ro.product.$(1).device=$(TARGET_DEVICE)" >> $(2);\
+    if [ -n "$(strip $(OVERRIDE_TARGET_DEVICE))" ]; then \
+        echo "ro.product.$(1).device=$(OVERRIDE_TARGET_DEVICE)" >> $(2);\
+    else \
+        echo "ro.product.$(1).device=$(TARGET_DEVICE)" >> $(2);\
+    fi; \
     echo "ro.product.$(1).manufacturer=$(PRODUCT_MANUFACTURER)" >> $(2);\
     echo "ro.product.$(1).model=$(PRODUCT_MODEL)" >> $(2);\
-    echo "ro.product.$(1).name=$(TARGET_PRODUCT)" >> $(2);\
+    if [ -n "$(strip $(OVERRIDE_TARGET_PRODUCT))" ]; then \
+        echo "ro.product.$(1).name=$(OVERRIDE_TARGET_PRODUCT)" >> $(2);\
+    else \
+        echo "ro.product.$(1).name=$(TARGET_PRODUCT)" >> $(2);\
+    fi; \
     if [ -n "$(strip $(PRODUCT_MODEL_FOR_ATTESTATION))" ]; then \
         echo "ro.product.model_for_attestation=$(PRODUCT_MODEL_FOR_ATTESTATION)" >> $(2);\
     fi; \
