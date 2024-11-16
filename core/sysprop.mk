@@ -35,10 +35,10 @@ define generate-common-build-props
     echo "####################################" >> $(2);\
     $(if $(filter system,$(1)),\
         echo "ro.product.$(1).brand=$(PRODUCT_SYSTEM_BRAND)" >> $(2);\
-        echo "ro.product.$(1).device=$(PRODUCT_SYSTEM_DEVICE)" >> $(2);\
+        echo "ro.product.$(1).device=$(OVERRIDE_TARGET_DEVICE)" >> $(2);\
         echo "ro.product.$(1).manufacturer=$(PRODUCT_SYSTEM_MANUFACTURER)" >> $(2);\
         echo "ro.product.$(1).model=$(PRODUCT_SYSTEM_MODEL)" >> $(2);\
-        echo "ro.product.$(1).name=$(PRODUCT_SYSTEM_NAME)" >> $(2);\
+        echo "ro.product.$(1).name=$(OVERRIDE_TARGET_PRODUCT)" >> $(2);\
       ,\
         echo "ro.product.$(1).brand=$(PRODUCT_BRAND)" >> $(2);\
         echo "ro.product.$(1).device=$(TARGET_DEVICE)" >> $(2);\
@@ -187,7 +187,11 @@ BUILD_VERSION_TAGS := $(subst $(space),$(comma),$(sort $(BUILD_VERSION_TAGS)))
 # BUILD_FINGERPRINT is used used to uniquely identify the combined build and
 # product; used by the OTA server.
 ifeq (,$(strip $(BUILD_FINGERPRINT)))
-  BUILD_FINGERPRINT := $(PRODUCT_BRAND)/$(TARGET_PRODUCT)/$(TARGET_DEVICE):$(PLATFORM_VERSION)/$(BUILD_ID)/$(BUILD_NUMBER_FROM_FILE):$(TARGET_BUILD_VARIANT)/$(BUILD_VERSION_TAGS)
+    ifneq ($(strip $(OVERRIDE_TARGET_PRODUCT)),)
+        BUILD_FINGERPRINT := $(PRODUCT_BRAND)/$(OVERRIDE_TARGET_PRODUCT)/$(OVERRIDE_TARGET_DEVICE):$(PLATFORM_VERSION)/$(BUILD_ID)/$(BUILD_NUMBER_FROM_FILE):$(TARGET_BUILD_VARIANT)/$(BUILD_VERSION_TAGS)
+    else
+        BUILD_FINGERPRINT := $(PRODUCT_BRAND)/$(TARGET_PRODUCT)/$(TARGET_DEVICE):$(PLATFORM_VERSION)/$(BUILD_ID)/$(BUILD_NUMBER_FROM_FILE):$(TARGET_BUILD_VARIANT)/$(BUILD_VERSION_TAGS)
+    endif
 endif
 
 BUILD_FINGERPRINT_FILE := $(PRODUCT_OUT)/build_fingerprint.txt
