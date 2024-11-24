@@ -110,6 +110,17 @@ ANDROID_SYS_VER := $(shell awk '/ANDROID_SYS_VER/ {print substr($$3, 2,12)}' $(V
 STUDY_PARA_VER := $(shell awk '/STUDY_PARA_VER/ {print substr($$3, 2,12)}' $(VERSIONDEF))
 endif
 
+ifndef DISPLAY_DATETIME
+DISPLAY_DATETIME := $(shell date +'%Y%m%d')
+endif
+.KATI_READONLY := DISPLAY_DATETIME
+
+ifndef DISPLAYPATH
+DISPLAYPATH := $(TOPDIR)version/build_fpversion.h
+DISPLAY_FPVERSION := $(shell awk '{print $0}' $(DISPLAYPATH))
+endif
+.KATI_READONLY := DISPLAY_FPVERSION
+
 ifndef PLATFORM_VERSION
   ifeq (REL,$(PLATFORM_VERSION_CODENAME))
       PLATFORM_VERSION := $(PLATFORM_VERSION_LAST_STABLE)
