@@ -322,13 +322,19 @@ ifneq ($(PRODUCT_NO_DYNAMIC_SYSTEM_UPDATE),true)
 endif
 
 # Check if the build supports NFC apex or not
-ifeq ($(RELEASE_PACKAGE_NFC_STACK),NfcNci)
+ifeq ($(BOARD_USES_SAMSUNG_NFC), true)
     PRODUCT_PACKAGES += \
         framework-nfc \
         NfcNci
 else
-    PRODUCT_PACKAGES += \
-        com.android.nfcservices
+    ifeq ($(RELEASE_PACKAGE_NFC_STACK),NfcNci)
+        PRODUCT_PACKAGES += \
+            framework-nfc \
+            NfcNci
+    else
+        PRODUCT_PACKAGES += \
+            com.android.nfcservices
+    endif
 endif
 
 # Check if the build supports Profiling module
