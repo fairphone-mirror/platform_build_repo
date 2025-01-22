@@ -5747,6 +5747,12 @@ INTERNAL_OTATOOLS_PACKAGE_FILES += \
   $(sort $(shell find build/make/target/product/security -type f -name "*.x509.pem" -o \
       -name "*.pk8"))
 
+ifeq ($(BUILD_WITH_RELEASEKEY),true)
+INTERNAL_OTATOOLS_PACKAGE_FILES += \
+  $(sort $(shell find $(FAIRPHONE_CERTIFICATE_PATH)/certificate/security -type f -name "*.x509.pem" -o \
+      -name "*.pk8"))
+endif
+
 ifneq (,$(wildcard packages/modules))
 INTERNAL_OTATOOLS_PACKAGE_FILES += \
   $(sort $(shell find packages/modules -type f -name "*.x509.pem" -o -name "*.pk8" -o -name \
