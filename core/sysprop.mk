@@ -181,8 +181,9 @@ BUILD_KEYS := test-keys
 else
 ifeq ($(BUILD_WITH_RELEASEKEY),true)
 BUILD_KEYS := release-keys
-endif # BUILD_WITH_RELEASEKEY
+else
 BUILD_KEYS := dev-keys
+endif # BUILD_WITH_RELEASEKEY
 endif
 BUILD_VERSION_TAGS += $(BUILD_KEYS)
 BUILD_VERSION_TAGS := $(subst $(space),$(comma),$(sort $(BUILD_VERSION_TAGS)))
