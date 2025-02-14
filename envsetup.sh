@@ -2106,6 +2106,7 @@ function source_vendorsetup() {
             fi
         done
     done
+    amss_sm7635/Milos.LA*/common/sectoolsv2/sign.sh prebuild
 }
 
 function showcommands() {
