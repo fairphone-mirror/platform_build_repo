@@ -76,6 +76,7 @@ $(call add_json_str,  DeviceSecondaryCpuVariant,         $(TARGET_2ND_CPU_VARIAN
 $(call add_json_list, DeviceSecondaryAbi,                $(TARGET_2ND_CPU_ABI) $(TARGET_2ND_CPU_ABI2))
 
 $(call add_json_str,  Fairphone_rel_type,                $(FAIRPHONE_REL_TYPE))
+$(call add_json_str,  Fairphone_build_number,            $(FAIRPHONE_BUILD_NUMBER))
 
 $(call add_json_bool, Aml_abis,                          $(if $(filter mainline_sdk,$(TARGET_ARCH_SUITE)),true))
 $(call add_json_bool, Ndk_abis,                          $(if $(filter ndk,         $(TARGET_ARCH_SUITE)),true))

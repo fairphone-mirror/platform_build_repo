@@ -108,6 +108,7 @@ RECOVERY_VER := $(shell awk '/RECOVERY_VER/ {print substr($$3, 1,12)}' $(VERSION
 ANDROID_BOOT_VER := $(shell awk '/ANDROID_BOOT_VER/ {print substr($$3, 1,12)}' $(VERSIONDEF))
 ANDROID_SYS_VER := $(shell awk '/ANDROID_SYS_VER/ {print substr($$3, 1,12)}' $(VERSIONDEF))
 STUDY_PARA_VER := $(shell awk '/STUDY_PARA_VER/ {print substr($$3, 1,12)}' $(VERSIONDEF))
+FAIRPHONE_BUILD_NUMBER := $(shell awk '/BUILD_AP_VER/ {print $$3}' $(VERSIONDEF))
 endif
 
 ifndef PLATFORM_VERSION
