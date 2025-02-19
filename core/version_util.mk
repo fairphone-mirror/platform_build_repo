@@ -111,7 +111,8 @@ STUDY_PARA_VER := $(shell awk '/STUDY_PARA_VER/ {print substr($$3, 2,12)}' $(VER
 endif
 
 ifndef DISPLAY_DATETIME
-DISPLAY_DATETIME := $(shell date +'%Y%m%d')
+DISPLAYTIMEPATH := $(TOPDIR)version/build_datetime.h
+DISPLAY_DATETIME := $(shell awk '{print substr($$1, 5, 8)}' $(DISPLAYTIMEPATH))
 endif
 .KATI_READONLY := DISPLAY_DATETIME
 
