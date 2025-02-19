@@ -162,6 +162,9 @@ OPTIONS.allow_partial_ab = False
 OPTIONS.framework_dexpreopt_config = None
 OPTIONS.framework_dexpreopt_tools = None
 OPTIONS.vendor_dexpreopt_config = None
+# FOTA tool
+OPTIONS.fp_target_files_extarct_build = False
+
 
 
 def move_only_exists(source, destination):
@@ -470,37 +473,38 @@ def merge_target_files(temp_dir):
 
   output_target_files_temp_dir = create_merged_package(temp_dir)
 
-  partition_map = common.PartitionMapFromTargetFiles(
-      output_target_files_temp_dir)
-
-  compatibility_errors = merge_compatibility_checks.CheckCompatibility(
-      target_files_dir=output_target_files_temp_dir,
-      partition_map=partition_map)
-  if compatibility_errors:
-    for error in compatibility_errors:
-      logger.error(error)
-    raise ExternalError(
-        'Found incompatibilities in the merged target files package.')
-
-  # Include the compiled policy in an image if requested.
-  if OPTIONS.rebuild_sepolicy:
-    rebuild_image_with_sepolicy(output_target_files_temp_dir)
-
-  generate_missing_images(output_target_files_temp_dir)
-
-  generate_super_empty_image(output_target_files_temp_dir,
-                             OPTIONS.output_super_empty)
-
-  # Finally, create the output target files zip archive and/or copy the
-  # output items to the output target files directory.
-
-  if OPTIONS.output_dir:
-    merge_utils.CopyItems(output_target_files_temp_dir, OPTIONS.output_dir,
-                          OPTIONS.output_item_list)
-
-  if not OPTIONS.output_target_files:
-    return
-
+  if not OPTIONS.fp_target_files_extarct_build:
+    partition_map = common.PartitionMapFromTargetFiles(
+        output_target_files_temp_dir)
+  
+    compatibility_errors = merge_compatibility_checks.CheckCompatibility(
+        target_files_dir=output_target_files_temp_dir,
+        partition_map=partition_map)
+    if compatibility_errors:
+      for error in compatibility_errors:
+        logger.error(error)
+      raise ExternalError(
+          'Found incompatibilities in the merged target files package.')
+  
+    # Include the compiled policy in an image if requested.
+    if OPTIONS.rebuild_sepolicy:
+      rebuild_image_with_sepolicy(output_target_files_temp_dir)
+  
+    generate_missing_images(output_target_files_temp_dir)
+  
+    generate_super_empty_image(output_target_files_temp_dir,
+                               OPTIONS.output_super_empty)
+  
+    # Finally, create the output target files zip archive and/or copy the
+    # output items to the output target files directory.
+  
+    if OPTIONS.output_dir:
+      merge_utils.CopyItems(output_target_files_temp_dir, OPTIONS.output_dir,
+                            OPTIONS.output_item_list)
+  
+    if not OPTIONS.output_target_files:
+      return
+  
   create_target_files_archive(OPTIONS.output_target_files,
                               output_target_files_temp_dir, temp_dir)
 
@@ -589,6 +593,8 @@ def main():
       OPTIONS.framework_dexpreopt_tools = a
     elif o == '--vendor-dexpreopt-config':
       OPTIONS.vendor_dexpreopt_config = a
+    elif o == '--fp_target_files_extarct_build':
+      OPTIONS.fp_target_files_extarct_build = True
     else:
       return False
     return True
@@ -625,6 +631,7 @@ def main():
           'keep-tmp',
           'avb-resolve-rollback-index-location-conflict',
           'allow-partial-ab',
+          'fp_target_files_extarct_build',
       ],
       extra_option_handler=option_handler)
 
