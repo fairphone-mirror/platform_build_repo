@@ -40,6 +40,13 @@ define generate-common-build-props
         echo "ro.product.$(1).model=$(PRODUCT_SYSTEM_MODEL)" >> $(2);\
         echo "ro.product.$(1).name=$(OVERRIDE_TARGET_PRODUCT)" >> $(2);\
       ,\
+      $(if $(filter product,$(1)),\
+        echo "ro.product.$(1).brand=$(PRODUCT_SYSTEM_BRAND)" >> $(2);\
+        echo "ro.product.$(1).device=$(OVERRIDE_TARGET_DEVICE)" >> $(2);\
+        echo "ro.product.$(1).manufacturer=$(PRODUCT_SYSTEM_MANUFACTURER)" >> $(2);\
+        echo "ro.product.$(1).model=$(OVERRIDE_PRODUCT_MODEL)" >> $(2);\
+        echo "ro.product.$(1).name=$(OVERRIDE_TARGET_PRODUCT)" >> $(2);\
+      ,\
         echo "ro.product.$(1).brand=$(PRODUCT_BRAND)" >> $(2);\
         echo "ro.product.$(1).device=$(TARGET_DEVICE)" >> $(2);\
         echo "ro.product.$(1).manufacturer=$(PRODUCT_MANUFACTURER)" >> $(2);\
@@ -60,6 +67,7 @@ define generate-common-build-props
         if [ -n "$(strip $(PRODUCT_MANUFACTURER_FOR_ATTESTATION))" ]; then \
             echo "ro.product.manufacturer_for_attestation=$(PRODUCT_MANUFACTURER_FOR_ATTESTATION)" >> $(2);\
         fi; \
+       ) \
     )\
     $(if $(filter true,$(ZYGOTE_FORCE_64)),\
         $(if $(filter vendor,$(1)),\
