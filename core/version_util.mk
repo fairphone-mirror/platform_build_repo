@@ -133,7 +133,9 @@ ifneq ($(wildcard $(VERSIONDEF)),)
   ANDROID_BOOT_VER := $(shell awk '/ANDROID_BOOT_VER/ {print substr($$3, 1,12)}' $(VERSIONDEF))
   ANDROID_SYS_VER := $(shell awk '/ANDROID_SYS_VER/ {print substr($$3, 1,12)}' $(VERSIONDEF))
   STUDY_PARA_VER := $(shell awk '/STUDY_PARA_VER/ {print substr($$3, 1,12)}' $(VERSIONDEF))
-  FAIRPHONE_BUILD_NUMBER := $(shell awk '/BUILD_AP_VER/ {print $$3}' $(VERSIONDEF))
+  ifdef FAIRPHONE_REL_TYPE
+    FAIRPHONE_BUILD_NUMBER := $(shell awk '/BUILD_AP_VER/ {print $$3}' $(VERSIONDEF))
+  endif
 endif
 
 ifndef PLATFORM_VERSION
@@ -237,6 +239,9 @@ ifndef BUILD_ID
   #
   # If there is no BUILD_ID set, make it obvious.
   BUILD_ID := UNKNOWN
+endif
+ifdef FAIRPHONE_REL_TYPE
+  BUILD_ID = $(OVERRIDE_TARGET_PRODUCT).$(FAIRPHONE_REL_TYPE).$(PLATFORM_VERSION).$(FAIRPHONE_BUILD_NUMBER)
 endif
 .KATI_READONLY := BUILD_ID
 
