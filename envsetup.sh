@@ -2108,6 +2108,7 @@ function source_vendorsetup() {
         done
     done
     amss_sm7635/Milos.LA*/common/sectoolsv2/sign.sh prebuild
+    amss_sm7635/Milos.LA*/common/sectoolsv2/sign.sh signimage vendor/qcom/proprietary/vfw-vpu-20/vpu20_2v.mbn VENUS-FW
 }
 
 function showcommands() {
