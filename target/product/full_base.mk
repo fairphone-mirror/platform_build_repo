@@ -38,7 +38,7 @@ PRODUCT_PACKAGES += \
 
 # Additional settings used in all AOSP builds
 PRODUCT_VENDOR_PROPERTIES := \
-    ro.config.ringtone?=Sunbeam.mp3 \
+    ro.config.ringtone?=Noises1.ogg \
     ro.config.notification_sound?=pixiedust.ogg
 
 # Put en_US first in the list, so make it default.
