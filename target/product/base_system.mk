@@ -223,8 +223,6 @@ PRODUCT_PACKAGES += \
     media_profiles_V1_0.dtd \
     MediaProviderLegacy \
     mediaserver \
-    mediaserver64 \
-    mediaserverwrapper \
     mke2fs \
     mkfs.erofs \
     monkey \
