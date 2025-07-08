@@ -505,6 +505,13 @@ PRODUCT_VENDOR_PROPERTIES += ro.zygote?=zygote32
 PRODUCT_SYSTEM_PROPERTIES += debug.atrace.tags.enableflags=0
 PRODUCT_SYSTEM_PROPERTIES += persist.traced.enable=1
 PRODUCT_SYSTEM_PROPERTIES += ro.surface_flinger.game_default_frame_rate_override=60
+ifeq ($(filter undefined,$(foreach v,ANDROID_SYS_VER ANDROID_BOOT_VER RECOVERY_VER MODEM_VER STUDY_PARA_VER,$(origin $(v)))),)
+  PRODUCT_SYSTEM_PROPERTIES += ro.fp.sys.ver=$(ANDROID_SYS_VER)
+  PRODUCT_SYSTEM_PROPERTIES += ro.fp.boot.ver=$(ANDROID_BOOT_VER)
+  PRODUCT_SYSTEM_PROPERTIES += ro.fp.rec.ver=$(RECOVERY_VER)
+  PRODUCT_SYSTEM_PROPERTIES += ro.fp.modem.ver=$(MODEM_VER)
+  PRODUCT_SYSTEM_PROPERTIES += ro.fp.study.ver=$(STUDY_PARA_VER)
+endif
 
 # Include kernel configs.
 PRODUCT_PACKAGES += \
