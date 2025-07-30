@@ -212,8 +212,10 @@ $(call add_soong_config_var_value,ANDROID,include_nonpublic_framework_api,true)
 endif
 
 # Add nfc build flag to soong
+ifneq ($(BOARD_USES_SAMSUNG_NFC), true)
 ifneq ($(RELEASE_PACKAGE_NFC_STACK),NfcNci)
   $(call soong_config_set,bootclasspath,nfc_apex_bootclasspath_fragment,true)
+endif
 endif
 
 # Add uwb build flag to soong

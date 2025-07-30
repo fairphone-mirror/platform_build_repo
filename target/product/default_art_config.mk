@@ -115,9 +115,9 @@ endif
 
 # Check if the build supports NFC apex or not
 ifeq ($(BOARD_USES_SAMSUNG_NFC), true)
-#    PRODUCT_BOOT_JARS += \
-#        framework-nfc
-    PRODUCT_APEX_BOOT_JARS += com.android.nfcservices:framework-nfc
+    PRODUCT_BOOT_JARS += \
+        framework-nfc
+#    PRODUCT_APEX_BOOT_JARS += com.android.nfcservices:framework-nfc
 else
     ifeq ($(RELEASE_PACKAGE_NFC_STACK),NfcNci)
         PRODUCT_BOOT_JARS += \
