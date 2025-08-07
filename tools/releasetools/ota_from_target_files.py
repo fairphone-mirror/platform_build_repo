@@ -283,7 +283,8 @@ import common
 import ota_utils
 import payload_signer
 from ota_utils import (VABC_COMPRESSION_PARAM_SUPPORT, FinalizeMetadata, GetPackageMetadata,
-                       PayloadGenerator, SECURITY_PATCH_LEVEL_PROP_NAME, ExtractTargetFiles, CopyTargetFilesDir)
+                       PayloadGenerator, SECURITY_PATCH_LEVEL_PROP_NAME, ExtractTargetFiles,
+                       CopyTargetFilesDir, VENDOR_SECURITY_PATCH_LEVEL_PROP_NAME)
 from common import DoesInputFileContain, IsSparseImage
 import target_files_diff
 from non_ab_ota import GenerateNonAbOtaPackage
@@ -1492,29 +1493,47 @@ def main(argv):
     target_build_prop = OPTIONS.target_info_dict["build.prop"]
     source_spl = source_build_prop.GetProp(SECURITY_PATCH_LEVEL_PROP_NAME)
     target_spl = target_build_prop.GetProp(SECURITY_PATCH_LEVEL_PROP_NAME)
-    is_spl_downgrade = target_spl < source_spl
+    source_vendor_spl = OPTIONS.source_info_dict["vendor.build.prop"].GetProp(VENDOR_SECURITY_PATCH_LEVEL_PROP_NAME)
+    target_vendor_spl = OPTIONS.target_info_dict["vendor.build.prop"].GetProp(VENDOR_SECURITY_PATCH_LEVEL_PROP_NAME)
+    if bool(source_vendor_spl) != bool(target_vendor_spl):
+      raise common.ExternalError(
+        "Inconsistent build properties. Either both or neither of source and target must have "
+        "property {}. Source: {}. Target: {}".format(VENDOR_SECURITY_PATCH_LEVEL_PROP_NAME,
+          source_vendor_spl, target_vendor_spl))
+
+    def get_spl_summary():
+      return (
+        f"Security patch levels:\n"
+        f"  target build (system): {target_spl}\n"
+        f"  source build (system): {source_spl}\n"
+        f"  target build (vendor): {target_vendor_spl}\n"
+        f"  source build (vendor): {source_vendor_spl}")
+
+    is_vendor_spl_downgrade = target_vendor_spl < source_vendor_spl if source_vendor_spl else False
+    is_spl_downgrade = target_spl < source_spl or is_vendor_spl_downgrade
     if is_spl_downgrade and target_build_prop.GetProp("ro.build.tags") == "release-keys":
       raise common.ExternalError(
-          "Target security patch level {} is older than source SPL {} "
+          "Target security patch level is older than source SPL. "
           "A locked bootloader will reject SPL downgrade no matter "
           "what(even if data wipe is done), so SPL downgrade on any "
-          "release-keys build is not allowed.".format(target_spl, source_spl))
+          "release-keys build is not allowed.\n{}".format(get_spl_summary()))
 
-    logger.info("SPL downgrade on %s",
-                target_build_prop.GetProp("ro.build.tags"))
+    if is_spl_downgrade:
+      logger.info("SPL downgrade on %s",
+                  target_build_prop.GetProp("ro.build.tags"))
     if is_spl_downgrade and not OPTIONS.spl_downgrade and not OPTIONS.downgrade:
       raise common.ExternalError(
-          "Target security patch level {} is older than source SPL {} applying "
+          "Target security patch level is older than source SPL. Applying "
           "such OTA will likely cause device fail to boot. Pass --spl_downgrade "
           "to override this check. This script expects security patch level to "
           "be in format yyyy-mm-dd (e.x. 2021-02-05). It's possible to use "
           "separators other than -, so as long as it's used consistenly across "
-          "all SPL dates".format(target_spl, source_spl))
+          "all SPL dates.\n{}".format(get_spl_summary()))
     elif not is_spl_downgrade and OPTIONS.spl_downgrade:
       raise ValueError("--spl_downgrade specified but no actual SPL downgrade"
                        " detected. Please only pass in this flag if you want a"
-                       " SPL downgrade. Target SPL: {} Source SPL: {}"
-                       .format(target_spl, source_spl))
+                       " SPL downgrade.\n{}"
+                       .format(get_spl_summary()))
   if generate_ab:
     GenerateAbOtaPackage(
         target_file=args[0],
