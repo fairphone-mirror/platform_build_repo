@@ -33,34 +33,42 @@ define generate-common-build-props
     echo "# from generate-common-build-props" >> $(2);\
     echo "# These properties identify this partition image." >> $(2);\
     echo "####################################" >> $(2);\
-    echo "ro.product.$(1).brand=$(PRODUCT_BRAND)" >> $(2);\
-    if [ -n "$(strip $(OVERRIDE_TARGET_DEVICE))" ]; then \
+    $(if $(filter system,$(1)),\
+        echo "ro.product.$(1).brand=$(PRODUCT_BRAND)" >> $(2);\
         echo "ro.product.$(1).device=$(OVERRIDE_TARGET_DEVICE)" >> $(2);\
-    else \
-        echo "ro.product.$(1).device=$(TARGET_DEVICE)" >> $(2);\
-    fi; \
-    echo "ro.product.$(1).manufacturer=$(PRODUCT_MANUFACTURER)" >> $(2);\
-    echo "ro.product.$(1).model=$(PRODUCT_MODEL)" >> $(2);\
-    if [ -n "$(strip $(OVERRIDE_TARGET_PRODUCT))" ]; then \
+        echo "ro.product.$(1).manufacturer=$(PRODUCT_MANUFACTURER)" >> $(2);\
+        echo "ro.product.$(1).model=$(PRODUCT_MODEL)" >> $(2);\
         echo "ro.product.$(1).name=$(OVERRIDE_TARGET_PRODUCT)" >> $(2);\
-    else \
+      ,\
+      $(if $(filter product,$(1)),\
+        echo "ro.product.$(1).brand=$(PRODUCT_BRAND)" >> $(2);\
+        echo "ro.product.$(1).device=$(OVERRIDE_TARGET_DEVICE)" >> $(2);\
+        echo "ro.product.$(1).manufacturer=$(PRODUCT_MANUFACTURER)" >> $(2);\
+        echo "ro.product.$(1).model=$(OVERRIDE_PRODUCT_MODEL)" >> $(2);\
+        echo "ro.product.$(1).name=$(OVERRIDE_TARGET_PRODUCT)" >> $(2);\
+      ,\
+        echo "ro.product.$(1).brand=$(PRODUCT_BRAND)" >> $(2);\
+        echo "ro.product.$(1).device=$(TARGET_DEVICE)" >> $(2);\
+        echo "ro.product.$(1).manufacturer=$(PRODUCT_MANUFACTURER)" >> $(2);\
+        echo "ro.product.$(1).model=$(PRODUCT_MODEL)" >> $(2);\
         echo "ro.product.$(1).name=$(TARGET_PRODUCT)" >> $(2);\
-    fi; \
-    if [ -n "$(strip $(PRODUCT_MODEL_FOR_ATTESTATION))" ]; then \
-        echo "ro.product.model_for_attestation=$(PRODUCT_MODEL_FOR_ATTESTATION)" >> $(2);\
-    fi; \
-    if [ -n "$(strip $(PRODUCT_BRAND_FOR_ATTESTATION))" ]; then \
-        echo "ro.product.brand_for_attestation=$(PRODUCT_BRAND_FOR_ATTESTATION)" >> $(2);\
-    fi; \
-    if [ -n "$(strip $(PRODUCT_NAME_FOR_ATTESTATION))" ]; then \
-        echo "ro.product.name_for_attestation=$(PRODUCT_NAME_FOR_ATTESTATION)" >> $(2);\
-    fi; \
-    if [ -n "$(strip $(PRODUCT_DEVICE_FOR_ATTESTATION))" ]; then \
-        echo "ro.product.device_for_attestation=$(PRODUCT_DEVICE_FOR_ATTESTATION)" >> $(2);\
-    fi; \
-    if [ -n "$(strip $(PRODUCT_MANUFACTURER_FOR_ATTESTATION))" ]; then \
-        echo "ro.product.manufacturer_for_attestation=$(PRODUCT_MANUFACTURER_FOR_ATTESTATION)" >> $(2);\
-    fi; \
+        if [ -n "$(strip $(PRODUCT_MODEL_FOR_ATTESTATION))" ]; then \
+            echo "ro.product.model_for_attestation=$(PRODUCT_MODEL_FOR_ATTESTATION)" >> $(2);\
+        fi; \
+        if [ -n "$(strip $(PRODUCT_BRAND_FOR_ATTESTATION))" ]; then \
+            echo "ro.product.brand_for_attestation=$(PRODUCT_BRAND_FOR_ATTESTATION)" >> $(2);\
+        fi; \
+        if [ -n "$(strip $(PRODUCT_NAME_FOR_ATTESTATION))" ]; then \
+            echo "ro.product.name_for_attestation=$(PRODUCT_NAME_FOR_ATTESTATION)" >> $(2);\
+        fi; \
+        if [ -n "$(strip $(PRODUCT_DEVICE_FOR_ATTESTATION))" ]; then \
+            echo "ro.product.device_for_attestation=$(PRODUCT_DEVICE_FOR_ATTESTATION)" >> $(2);\
+        fi; \
+        if [ -n "$(strip $(PRODUCT_MANUFACTURER_FOR_ATTESTATION))" ]; then \
+            echo "ro.product.manufacturer_for_attestation=$(PRODUCT_MANUFACTURER_FOR_ATTESTATION)" >> $(2);\
+        fi; \
+       ) \
+    )\
     $(if $(filter true,$(ZYGOTE_FORCE_64)),\
         $(if $(filter vendor,$(1)),\
             echo "ro.$(1).product.cpu.abilist=$(TARGET_CPU_ABI_LIST_64_BIT)" >> $(2);\
