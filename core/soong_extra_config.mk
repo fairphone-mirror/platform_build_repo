@@ -29,6 +29,10 @@ $(call add_json_str, SystemManufacturer, $(PRODUCT_SYSTEM_MANUFACTURER))
 $(call add_json_str, SystemModel, $(PRODUCT_SYSTEM_MODEL))
 $(call add_json_str, SystemName, $(PRODUCT_SYSTEM_NAME))
 
+$(call add_json_str, SystemOverrideNDevice, $(OVERRIDE_TARGET_DEVICE))
+$(call add_json_str, SystemOverrideName, $(OVERRIDE_TARGET_PRODUCT))
+$(call add_json_str, ProductOverrideModel, $(OVERRIDE_PRODUCT_MODEL))
+
 # Collapses ?= and = operators for system property variables. Also removes double quotes to prevent
 # malformed JSON. This change aligns with the existing behavior of sysprop.mk, which passes property
 # variables to the echo command, effectively discarding surrounding double quotes.
