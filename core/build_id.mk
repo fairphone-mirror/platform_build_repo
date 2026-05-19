@@ -19,3 +19,4 @@
 # capitalized by convention.
 
 BUILD_ID=FP4.SREL.15.16.2
+PLATFORM_BASE_OS=Fairphone/FP4eea/FP4:15/FP4.QREL.15.16.1/15.16.1:user/release-keys
